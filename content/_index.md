@@ -4,4 +4,5 @@ menu = "main"
 weight = 1
 +++
 
-restart.
+Currently studying at Tongji University.
+
