@@ -1,5 +1,6 @@
 ---
 title: Notes on _CS103 Mathematical Foundations of Computing_
+date: 2026-09-19
 ---
 
 # Notes on _CS103: Mathematical Foundations of Computing_
@@ -141,9 +142,9 @@ For any graph $G = (V, E)$, if $G$ is not connected, then $G^C$ is connected.
 
 当且仅当版本：如果把 $m$ 个物体分配到 $n$ 个盒子里，存在一个盒子装有多于 $m/n$ 个物体，当且仅当存在一个盒子装有少于 $m/n$ 个物体。（偏离平均值的情况必然成对出现）
 
-## 8.Finite Automata
+## 8～10.Finite Automata, Regular Expression
 
-### Computability Theory
+**Computability Theory**
 
 自动机 automaton 是对计算机的抽象。
 
@@ -174,7 +175,7 @@ NFA 有 $\varepsilon$-转移，不消耗输入就能进行。
 - Perfect positive guessing：它总是能神奇地猜中哪一条路最终会通向接受状态。positive 在于只要存在就判定接受。
 - Massive parallelism：一个 NFA 可以被看作是同一时间可以处于多个状态的 DFA。在每一个时间点，当 NFA 需要执行转移时，它会同时尝试所有的选项。实际上是在同时维护一个“**当前可能处于的状态集合**”。
 
-## 9.More Finite Automata and Regular Expressions
+---
 
 NFA 转换为 DFA 的时候，DFA 的状态对应 NFA 状态的集合。
 
@@ -182,3 +183,115 @@ NFA 转换为 DFA 的时候，DFA 的状态对应 NFA 状态的集合。
 
 这样我们可以用两种方法对正则语言进行推理。
 
+定理：如果 $L$ 是正则语言，那么 $\overline{L}$ 也是正则语言。
+
+因为正则语言都可以被 DFA 识别。把一个 DFA 的所有接受状态和非接受状态翻转，就能得到识别补集的 DFA。既然结果依然能被 DFA 识别，那它自然还是正则语言。
+
+因此说正则语言在补运算下封闭。
+
+---
+
+克林闭包（Kleene Closure）是对语言的一种操作。$L^*=\{w\in \Sigma ^* | \exist n \in \mathbb{N}. w \in L^{n} \}$
+
+$L^{n}$ 就是 $L$ 的字符串通过连接零次或多次（允许重复）所能形成的所有可能字符串的集合。
+
+**封闭性**
+
+如果 $L_1, L_2$ 是字母表 $\Sigma$ 的语言，那么以下也是正则语言：
+
+- $\overline{L_1}$
+- $L_1 \cup L_2$
+- $L_1 \cap L_2$
+- $L_1 L_2$
+- $L_1 ^*$
+
+---
+
+**Regular Expressions**
+
+自下而上地构建正则语言：从小的简单正则语言开始，利用封闭性构造。
+
+**正则表达式**是一种通过字符串表示来描述语言的方法。
+
+运算优先级：$(R)$ $R^*$ $R_1 R_2$ $R_1 \cup R_2$
+
+例如：$\Sigma = \{a, b\}$，$L = \{w\in \Sigma ^* | w \ contains\ aa \ as \ a \ substring\}$。正则表达式设计为 $(a\cup b)^*aa(a\cup b)^*$。
+
+如果 $R$ 是一个正则表达式，那么由 $R$ 所描述的语言 $\mathcal{L}(R)$ 是正则的。
+
+证明：原子正则表达式都表示正则语言。组合步骤对应着封闭性。因此，由它们构成的任何东西都必定是正则的！
+
+定理：如果 $L$ 是一个正则语言，那么就存在一个对应的正则表达式。
+
+证明思路：将任意一个 NFA 转化为正则表达式。
+
+状态消去算法 The State-Elimination Algorithm：
+
+- 从 $L$ 对应的 NFA $N$ 开始
+- 添加一个新的初始状态 $q_s$ 和接受状态 $q_f$
+  - 添加 $\epsilon$-转移：从 $q_s$ 添加一条指向 $N$ 的旧起始状态。
+  - 从 $N$ 的每一个旧接受状态，添加一条指向新的接受状态 $q_f$，并将旧接受状态标记为非接受状态。
+- 从 NFA 中反复移除除了 $q_s$ 和 $q_f$ 之外的其他状态，方法叫“短路（shortcutting）”，也就是将经过被消除状态的所有路径合并成直接连接的路径，并将路径上的正则表达式进行合并。直到只剩下 $q_s$ 和 $q_f$。
+- 最后从 $q_s$ 到 $q_f$ 的唯一一条转移边上标注的正则表达式就是 $L$ 的等价正则表达式。
+
+**定理**：以下陈述都是等价的：
+
+* $L$ 是一个正则语言。
+* 存在一个 DFA（确定性有限自动机）$D$，使得 $\mathcal{L}(D) = L$。
+* 存在一个 NFA（非确定性有限自动机）$N$，使得 $\mathcal{L}(N) = L$。
+* 存在一个正则表达式 $R$，使得 $\mathcal{L}(R) = L$。
+
+---
+
+正则语言对应于可以用有限内存解决的问题。在任何一个时间点，我们只需要存储有限多条信息中的一条。
+
+从某种意义上说，非正则语言对应于无法用有限内存解决的问题。
+
+既然人类建造的每一台计算机都只有有限的内存，那么在某种意义上，非正则语言对应的就是物理计算机无法解决的问题！
+
+$E=\{a^n b^n | n\in \mathbb{N} \}$ 是非正则的。
+
+区分集：假设有两个不同的字符串 $x, y$，如果存在某个后缀字符串 $z$ 使得字符串 $xz$ 属于语言 $L$ 而 $yz$ 不属于，就说后缀 $z$ 能区分 $x, y$。一个区分集 $S$ 就是指在这个集合里任意两个不同的字符串都可以被某个后缀区分开。
+
+Myhill-Nerode 定理：如果 $L$ 是一个语言，且 $S$ 是 $L$ 的一个包含无限多个字符串的区分集，那么 $L$ 不是正则语言。
+
+---
+
+DFA 就是有限内存的计算机，正则语言对应的是用有限内存可以解决的问题。现在我们知道计算机能解决的问题是有限的。
+
+## 11～12. CFGs, Turing Machines
+
+**Context-Free Grammars**
+
+上下文无关文法（CFG）是一套递归的规则，用来定义一种语言。
+
+一个上下文无关文法（CFG）在形式上是一个包含四个项目的集合：
+
+1. 非终结符集合（Nonterminal symbols / variables）
+2. 终结符集合（Terminal symbols）
+3. 产生式规则集合（Production rules）：说明每个非终结符如何被替换成终结符和非终结符组成的字符串。
+4. 起始符号（Start symbol）
+
+Derivation（推导）就是把 CFG 规则用一遍的过程。
+
+If $G$ is a CFG with alphabet $\Sigma$ and start symbol $S$, then the **language of** $G$  is the set $\mathcal{L}(G) = \{ \omega \in \Sigma^* \mid S \Rightarrow^* \omega \} $
+
+语言 $L$ 被称为上下文无关语言，当有一个 CFG $G$ 满足 $L=\mathcal{L}(G)$
+
+CFG 的规则只有 $\to$，没有像正则表达式一样的 $*$ 特殊操作。
+
+定理：每个正则语言都是上下文无关的。
+
+推导过程有无限的记忆。（通过递归，建立了无限记忆的栈）
+
+---
+
+**Turing Machines**
+
+TM 只有六种命令：`Move`, `Write`, `Goto`, `Return`, `If`, `If Not`
+
+recognizer, RE
+
+decider, R
+
+以后再学吧～

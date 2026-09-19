@@ -1,0 +1,25 @@
+{{ define "main" }}
+{{ .Content }}
+
+<section aria-labelledby="articles-title">
+  <h2 id="articles-title">文章</h2>
+  <ul class="blog-posts">
+    {{ range (where .Site.RegularPages "Section" "articles").ByDate.Reverse }}
+    <li>
+      {{ with .Date }}
+      <span>
+        <i>
+          <time datetime='{{ .Format "2006-01-02" }}'>
+            {{ .Format (default "02 Jan, 2006" $.Site.Params.dateFormat) }}
+          </time>
+        </i>
+      </span>
+      {{ end }}
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    </li>
+    {{ else }}
+    <li>暂无文章</li>
+    {{ end }}
+  </ul>
+</section>
+{{ end }}
