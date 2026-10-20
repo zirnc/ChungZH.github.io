@@ -1,5 +1,5 @@
 ---
-title: Notes on _CS103 Mathematical Foundations of Computing_
+title: Notes on CS103 Mathematical Foundations of Computing
 date: 2026-09-19
 ---
 
